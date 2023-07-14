@@ -1,0 +1,40 @@
+version: '3.3'
+services:
+  pythonserver:
+    container_name: t3-server
+    build: ./task3
+    ports:
+        - '65432:65432'
+    volumes:
+      - my-files:/home/files
+    networks:
+      databases_default:
+        ipv4_address: 172.25.0.2
+  database:
+    container_name: t3-database
+    build: ./task3_database
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: '1234'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - my-t3db:/var/lib/mysql
+    networks:
+      databases_default:
+        ipv4_address: 172.25.0.3
+
+volumes:
+  my-files:
+  my-t3db:
+
+networks:
+  databases_default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/16
+          gateway: 172.25.0.1
